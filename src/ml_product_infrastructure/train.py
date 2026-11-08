@@ -242,6 +242,7 @@ def run_training(config: dict[str, Any], run_name: str | None = None) -> dict[st
         config_path.write_text(yaml.safe_dump(config, sort_keys=False), encoding="utf-8")
         with mlflow.start_run(run_name=chosen_run_name):
             mlflow.log_params(_config_params(config))
+            mlflow.log_param("config", yaml.safe_dump(config, sort_keys=True))
             mlflow.log_param("data.version", str(config["data"]["s3_path"]))
             mlflow.log_param("git.commit", _git_commit())
             mlflow.log_dict(config, "config.yaml")
