@@ -6,9 +6,12 @@ readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "boto3==1.38.36",
+    "mlflow==3.16.1",
     "numpy==2.2.6",
     "Pillow==11.2.1",
     "python-dotenv==1.1.0",
+    "PyYAML==6.0.3",
+    "torch==2.7.1",
 ]
 
 [project.scripts]
@@ -24,11 +27,20 @@ dev = [
     "mypy==1.16.1",
     "pre-commit==4.2.0",
     "ruff==0.11.13",
+    "types-pyyaml==6.0.12.20250915",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ml_product_infrastructure"]
@@ -66,3 +78,8 @@ exclude = [
 [[tool.mypy.overrides]]
 module = ["ml_product_infrastructure.*", "scripts.*"]
 ignore_missing_imports = false
+
+[[tool.mypy.overrides]]
+module = ["torch", "torch.*", "mlflow", "mlflow.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
