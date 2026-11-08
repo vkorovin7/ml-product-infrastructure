@@ -55,6 +55,7 @@ services:
       retries: 12
 
   mlflow:
+    image: mlflow-server:3.16.1
     build:
       context: .
       dockerfile: Dockerfile.mlflow
