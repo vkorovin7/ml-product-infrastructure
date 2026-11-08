@@ -1,0 +1,6 @@
+FROM python:3.12.10-slim-bookworm
+
+ARG MLFLOW_VERSION=3.16.1
+RUN pip install --no-cache-dir "mlflow==${MLFLOW_VERSION}" "boto3==1.38.36" "psycopg2-binary==2.9.10"
+
+EXPOSE 5000

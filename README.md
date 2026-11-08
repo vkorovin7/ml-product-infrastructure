@@ -78,6 +78,51 @@ make data DATA_VERSION=v2 VALIDATION_SIZE=6000 SEED=123
 `manifest.json`. Manifest содержит размеры выборок, SHA-256 и размеры файлов метаданных, параметры
 разбиения и Git-коммит сборки.
 
+## Эксперименты
+
+Воспроизводимый запуск состоит из MLflow Tracking Server, PostgreSQL для метаданных, RustFS для
+артефактов и отдельного контейнера обучения. MLflow слушает `http://localhost:5000`; его метаданные
+хранятся в volume `mlflow_db_data`, а артефакты — в отдельном S3-бакете `mlflow`. Бакеты `ml-datasets`
+и `mlflow` автоматически создаются командой `create-bucket`. Секреты задаются в локальном `.env`;
+файл не коммитится.
+
+```sh
+cp .env.example .env
+make setup
+make infra-up
+make baseline
+make experiments CONFIG=configs/grid.yaml
+make infra-down
+```
+
+`make infra-up` собирает контейнеры и поднимает хранилище, PostgreSQL и MLflow. `make baseline`
+запускает простой классификатор `Flatten + Linear` в эксперименте `cifar10-baseline`. `make
+experiments` строит декартово произведение сетки и запускает шесть конфигураций CNN в одном
+эксперименте MLflow; параметры задаются в `configs/grid.yaml` и `configs/simple_cnn.yaml`. Можно
+поменять сетку или конфиг без изменения Python-кода. Все запуски выполняются контейнером `trainer`,
+подключённым к одной Docker-сети с MLflow и RustFS. CIFAR-файлы скачиваются из указанного S3-префикса
+в volume `training_data` и повторно используются между запусками.
+
+После каждой эпохи скрипт считает loss, accuracy и macro-F1 на validation. Чекпоинт с наименьшим
+validation loss восстанавливается перед финальной оценкой на test. MLflow сохраняет конфиг,
+параметры, метрики по эпохам, время обучения, эпоху лучшего чекпоинта и CSV-матрицу ошибок на
+validation. В RustFS публикуются `models/<experiment_name>/<run_name>/model.pt`, `config.yaml` и
+`metrics.json`; test-метрики используются для итогового отчёта, а выбор конфигурации делается только
+по validation loss.
+
+### Результаты CIFAR-10
+
+Выполненные значения фиксируются здесь после прогона baseline и сетки. Для выбора используется
+минимальный validation loss; test указан только для выбранной конфигурации.
+
+| Запуск | Конфигурация | Лучшая эпоха | Val loss | Val accuracy | Val macro-F1 | Test loss | Test accuracy | Test macro-F1 |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Baseline | Linear, lr=0.001, batch=128 | — | — | — | — | — | — | — |
+| Grid | Лучший CNN по val loss | — | — | — | — | — | — | — |
+| Выбрана | См. лучший grid run | — | — | — | — | — | — | — |
+
+Итоги и причина выбора будут обновлены после выполнения команд выше; test не участвует в подборе.
+
 **Карточка CIFAR-10.** Источник: [официальная страница CIFAR](https://www.cs.toronto.edu/~kriz/cifar.html).
 60 000 RGB-изображений размером 32×32: 50 000 train и 10 000 test, десять классов — airplane,
 automobile, bird, cat, deer, dog, frog, horse, ship, truck. Используется стратифицированное
