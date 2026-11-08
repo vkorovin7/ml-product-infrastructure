@@ -4,7 +4,20 @@ version = "0.1.0"
 description = "Учебный проект для воспроизводимой инфраструктуры ML-разработки"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+    "boto3==1.38.36",
+    "numpy==2.2.6",
+    "Pillow==11.2.1",
+    "python-dotenv==1.1.0",
+]
+
+[project.scripts]
+ingest-cifar10 = "ml_product_infrastructure.ingest:main"
+fetch-cifar10-raw = "ml_product_infrastructure.fetch_raw:main"
+convert-cifar10 = "ml_product_infrastructure.convert_cifar:main"
+split-cifar10 = "ml_product_infrastructure.split_dataset:main"
+stats-cifar10 = "ml_product_infrastructure.compute_stats:main"
+publish-cifar10 = "ml_product_infrastructure.publish_dataset:main"
 
 [dependency-groups]
 dev = [

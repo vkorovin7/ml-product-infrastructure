@@ -18,6 +18,7 @@ htmlcov/
 data/raw/
 data/interim/
 data/processed/
+data/interim/
 artifacts/
 outputs/
 *.log
