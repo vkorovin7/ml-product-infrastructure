@@ -90,11 +90,15 @@ make data DATA_VERSION=v2 VALIDATION_SIZE=6000 SEED=123
 cp .env.example .env
 make setup
 make infra-up
+make ingest
+make data
 make baseline
 make experiments CONFIG=configs/grid.yaml
 make infra-down
 ```
 
+На чистом volume после `make infra-up` выполните `make ingest` и `make data`, чтобы создать
+`processed/cifar10/v1/`; при повторных запусках опубликованную версию повторно собирать не нужно.
 `make infra-up` собирает контейнеры и поднимает хранилище, PostgreSQL и MLflow. `make baseline`
 запускает простой классификатор `Flatten + Linear` в эксперименте `cifar10-baseline`. `make
 experiments` строит декартово произведение сетки и запускает шесть конфигураций CNN в одном
