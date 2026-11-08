@@ -1,0 +1,33 @@
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Data and generated artifacts
+data/raw/
+data/interim/
+data/processed/
+artifacts/
+outputs/
+*.log
+
+# Notebook outputs
+.ipynb_checkpoints/
+*.ipynb
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

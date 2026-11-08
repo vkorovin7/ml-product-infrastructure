@@ -1,0 +1,55 @@
+[project]
+name = "ml-product-infrastructure"
+version = "0.1.0"
+description = "Учебный проект для воспроизводимой инфраструктуры ML-разработки"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "mypy==1.16.1",
+    "pre-commit==4.2.0",
+    "ruff==0.11.13",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ml_product_infrastructure"]
+
+[tool.ruff]
+line-length = 99
+target-version = "py312"
+src = ["src", "scripts"]
+exclude = [".venv", "build", "dist", "data", "artifacts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "UP", "I", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+exclude = [
+    "(^|/)__pycache__/",
+    "(^|/)\\.venv/",
+    "(^|/)\\.mypy_cache/",
+    "(^|/)build/",
+    "(^|/)dist/",
+    "(^|/)data/",
+    "(^|/)artifacts/",
+]
+
+[[tool.mypy.overrides]]
+module = ["ml_product_infrastructure.*", "scripts.*"]
+ignore_missing_imports = false
